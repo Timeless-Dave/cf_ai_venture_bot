@@ -339,18 +339,18 @@ function Chat() {
   return (
     <div className="flex flex-col h-screen bg-transparent">
       {/* Header */}
-      <header className="px-5 py-4 w-full sticky top-0 z-10 backdrop-blur-md bg-kumo-base/70 border-b border-kumo-line/50 transition-colors duration-300">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3 group">
-            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500 hover:from-blue-500 hover:to-purple-500 transition-all duration-500">
-              <span className="mr-2 inline-block transition-transform duration-300 group-hover:-rotate-12">🚀</span>VentureBot
+      <header className="px-3 sm:px-5 lg:px-8 py-3 sm:py-4 w-full sticky top-0 z-10 backdrop-blur-md bg-kumo-base/80 border-b border-kumo-line/50 transition-colors duration-300">
+        <div className="max-w-4xl mx-auto flex items-center justify-between flex-wrap gap-y-3">
+          <div className="flex items-center gap-2 sm:gap-3 group">
+            <h1 className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500 hover:from-blue-500 hover:to-purple-500 transition-all duration-500">
+              <span className="mr-1 sm:mr-2 inline-block transition-transform duration-300 group-hover:-rotate-12">🚀</span>VentureBot
             </h1>
-            <Badge variant="secondary" className="shadow-sm backdrop-blur-sm bg-kumo-base/50">
+            <Badge variant="secondary" className="shadow-sm backdrop-blur-sm bg-kumo-base/50 hidden xs:inline-flex">
               <ChatCircleDotsIcon size={12} weight="bold" className="mr-1" />
               AI Chat
             </Badge>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
             <div className="flex items-center gap-1.5">
               <CircleIcon
                 size={8}
@@ -388,8 +388,8 @@ function Chat() {
 
               {/* MCP Dropdown Panel */}
               {showMcpPanel && (
-                <div className="absolute right-0 top-full mt-2 w-96 z-50">
-                  <Surface className="rounded-xl ring ring-kumo-line shadow-lg p-4 space-y-4">
+                <div className="absolute right-0 top-full mt-2 w-[calc(100vw-1.5rem)] sm:w-96 max-w-full z-50 origin-top-right animate-in fade-in zoom-in-95 duration-200">
+                  <Surface className="rounded-xl ring ring-kumo-line shadow-2xl p-4 space-y-4">
                     {/* Panel Header */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -569,8 +569,8 @@ function Chat() {
             className="max-w-2xl w-full max-h-[85vh] overflow-hidden rounded-xl shadow-xl flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-kumo-line">
-              <Text size="sm" bold>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-kumo-line bg-kumo-base/50 backdrop-blur-sm sticky top-0 z-10">
+              <Text size="sm" bold className="bg-clip-text text-transparent bg-gradient-to-r from-kumo-brand to-kumo-accent">
                 Your business plan
               </Text>
               <Button
