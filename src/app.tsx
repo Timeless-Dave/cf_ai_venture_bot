@@ -60,6 +60,7 @@ function ThemeToggle() {
       icon={dark ? <SunIcon size={16} /> : <MoonIcon size={16} />}
       onClick={toggle}
       aria-label="Toggle theme"
+      className="transition-transform duration-300 hover:rotate-12 active:scale-95 bg-kumo-base/50 backdrop-blur-sm"
     />
   );
 }
@@ -374,12 +375,13 @@ function Chat() {
             <div className="relative" ref={mcpPanelRef}>
               <Button
                 variant="secondary"
-                icon={<PlugsConnectedIcon size={16} />}
+                icon={<PlugsConnectedIcon size={16} className="transition-transform group-hover:scale-110 duration-300" />}
                 onClick={() => setShowMcpPanel(!showMcpPanel)}
+                className="transition-all active:scale-95 duration-200 bg-kumo-base/50 backdrop-blur-sm group"
               >
                 MCP
                 {mcpToolCount > 0 && (
-                  <Badge variant="primary" className="ml-1.5">
+                  <Badge variant="primary" className="ml-1.5 shadow-sm animate-in zoom-in duration-300">
                     <WrenchIcon size={10} className="mr-0.5" />
                     {mcpToolCount}
                   </Badge>
@@ -411,8 +413,9 @@ function Chat() {
                         size="sm"
                         shape="square"
                         aria-label="Close MCP panel"
-                        icon={<XIcon size={14} />}
+                        icon={<XIcon size={14} className="transition-transform hover:rotate-90 duration-200" />}
                         onClick={() => setShowMcpPanel(false)}
+                        className="hover:bg-kumo-line/50 transition-colors"
                       />
                     </div>
 
@@ -538,16 +541,18 @@ function Chat() {
             </div>
             <Button
               variant="primary"
-              icon={<FileTextIcon size={16} />}
+              icon={<FileTextIcon size={16} className="transition-transform group-hover:scale-110 duration-300" />}
               onClick={handleGeneratePlan}
               disabled={!connected || planLoading}
+              className="transition-all hover:-translate-y-0.5 active:scale-95 duration-200 shadow-sm hover:shadow-md bg-gradient-to-r from-blue-600 to-indigo-600 border-0 group"
             >
               {planLoading ? "Generating…" : "Generate my plan"}
             </Button>
             <Button
               variant="secondary"
-              icon={<TrashIcon size={16} />}
+              icon={<TrashIcon size={16} className="transition-transform group-hover:text-red-500 duration-300" />}
               onClick={clearHistory}
+              className="transition-all active:scale-95 duration-200 bg-kumo-base/50 backdrop-blur-sm group hover:border-red-500/30"
             >
               Clear
             </Button>
