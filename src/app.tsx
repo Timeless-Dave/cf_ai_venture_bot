@@ -344,9 +344,15 @@ function Chat() {
         <div className="max-w-4xl mx-auto flex items-center justify-between flex-wrap gap-y-3">
           <div className="flex items-center gap-2 sm:gap-3 group">
             <h1 className="text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500 hover:from-blue-500 hover:to-purple-500 transition-all duration-500">
-              <span className="mr-1 sm:mr-2 inline-block transition-transform duration-300 group-hover:-rotate-12">🚀</span>VentureBot
+              <span className="mr-1 sm:mr-2 inline-block transition-transform duration-300 group-hover:-rotate-12">
+                🚀
+              </span>
+              VentureBot
             </h1>
-            <Badge variant="secondary" className="shadow-sm backdrop-blur-sm bg-kumo-base/50 hidden xs:inline-flex">
+            <Badge
+              variant="secondary"
+              className="shadow-sm backdrop-blur-sm bg-kumo-base/50 hidden xs:inline-flex"
+            >
               <ChatCircleDotsIcon size={12} weight="bold" className="mr-1" />
               AI Chat
             </Badge>
@@ -375,13 +381,21 @@ function Chat() {
             <div className="relative" ref={mcpPanelRef}>
               <Button
                 variant="secondary"
-                icon={<PlugsConnectedIcon size={16} className="transition-transform group-hover:scale-110 duration-300" />}
+                icon={
+                  <PlugsConnectedIcon
+                    size={16}
+                    className="transition-transform group-hover:scale-110 duration-300"
+                  />
+                }
                 onClick={() => setShowMcpPanel(!showMcpPanel)}
                 className="transition-all active:scale-95 duration-200 bg-kumo-base/50 backdrop-blur-sm group"
               >
                 MCP
                 {mcpToolCount > 0 && (
-                  <Badge variant="primary" className="ml-1.5 shadow-sm animate-in zoom-in duration-300">
+                  <Badge
+                    variant="primary"
+                    className="ml-1.5 shadow-sm animate-in zoom-in duration-300"
+                  >
                     <WrenchIcon size={10} className="mr-0.5" />
                     {mcpToolCount}
                   </Badge>
@@ -413,7 +427,12 @@ function Chat() {
                         size="sm"
                         shape="square"
                         aria-label="Close MCP panel"
-                        icon={<XIcon size={14} className="transition-transform hover:rotate-90 duration-200" />}
+                        icon={
+                          <XIcon
+                            size={14}
+                            className="transition-transform hover:rotate-90 duration-200"
+                          />
+                        }
                         onClick={() => setShowMcpPanel(false)}
                         className="hover:bg-kumo-line/50 transition-colors"
                       />
@@ -541,7 +560,12 @@ function Chat() {
             </div>
             <Button
               variant="primary"
-              icon={<FileTextIcon size={16} className="transition-transform group-hover:scale-110 duration-300" />}
+              icon={
+                <FileTextIcon
+                  size={16}
+                  className="transition-transform group-hover:scale-110 duration-300"
+                />
+              }
               onClick={handleGeneratePlan}
               disabled={!connected || planLoading}
               className="transition-all hover:-translate-y-0.5 active:scale-95 duration-200 shadow-sm hover:shadow-md bg-gradient-to-r from-blue-600 to-indigo-600 border-0 group"
@@ -550,7 +574,12 @@ function Chat() {
             </Button>
             <Button
               variant="secondary"
-              icon={<TrashIcon size={16} className="transition-transform group-hover:text-red-500 duration-300" />}
+              icon={
+                <TrashIcon
+                  size={16}
+                  className="transition-transform group-hover:text-red-500 duration-300"
+                />
+              }
               onClick={clearHistory}
               className="transition-all active:scale-95 duration-200 bg-kumo-base/50 backdrop-blur-sm group hover:border-red-500/30"
             >
@@ -575,7 +604,11 @@ function Chat() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-4 py-3 border-b border-kumo-line bg-kumo-base/50 backdrop-blur-sm sticky top-0 z-10">
-              <Text size="sm" bold className="bg-clip-text text-transparent bg-gradient-to-r from-kumo-brand to-kumo-accent">
+              <Text
+                size="sm"
+                bold
+                className="bg-clip-text text-transparent bg-gradient-to-r from-kumo-brand to-kumo-accent"
+              >
                 Your business plan
               </Text>
               <Button
@@ -613,8 +646,17 @@ function Chat() {
           {messages.length === 0 && (
             <div className="flex items-center justify-center min-h-[50vh] animate-in fade-in zoom-in duration-500">
               <Empty
-                icon={<ChatCircleDotsIcon size={48} className="text-kumo-accent drop-shadow-lg" />}
-                title={<span className="text-2xl font-bold tracking-tight">How can I help you validate your next big idea?</span>}
+                icon={
+                  <ChatCircleDotsIcon
+                    size={48}
+                    className="text-kumo-accent drop-shadow-lg"
+                  />
+                }
+                title={
+                  <span className="text-2xl font-bold tracking-tight">
+                    How can I help you validate your next big idea?
+                  </span>
+                }
                 contents={
                   <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl w-full">
                     {[
@@ -720,7 +762,10 @@ function Chat() {
 
                     if (isUser) {
                       return (
-                        <div key={i} className="flex justify-end animate-in slide-in-from-right-4 fade-in duration-300">
+                        <div
+                          key={i}
+                          className="flex justify-end animate-in slide-in-from-right-4 fade-in duration-300"
+                        >
                           <div className="max-w-[85%] px-5 py-3.5 rounded-3xl rounded-br-sm bg-gradient-to-br from-kumo-contrast to-kumo-contrast/90 text-kumo-inverse leading-relaxed shadow-sm ring-1 ring-black/5">
                             {text}
                           </div>
@@ -729,7 +774,10 @@ function Chat() {
                     }
 
                     return (
-                      <div key={i} className="flex justify-start animate-in slide-in-from-left-4 fade-in duration-300">
+                      <div
+                        key={i}
+                        className="flex justify-start animate-in slide-in-from-left-4 fade-in duration-300"
+                      >
                         <div className="max-w-[90%] rounded-3xl rounded-bl-sm bg-kumo-base/80 backdrop-blur-sm text-kumo-default leading-relaxed shadow-sm ring-1 ring-kumo-line/50 transition-shadow hover:shadow-md">
                           <Streamdown
                             className="sd-theme rounded-3xl rounded-bl-sm p-4 prose sm:prose-base prose-sm dark:prose-invert max-w-none"
