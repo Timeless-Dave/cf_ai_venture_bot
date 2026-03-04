@@ -9,21 +9,31 @@ body,
   width: 100%;
   height: 100%;
   margin: 0;
-  overflow: hidden; /* Prevent scrolling on the body level */
+  overflow: hidden;
+  /* Prevent scrolling on the body level */
 }
 
 body {
   /* Sick Dark theme gradient */
-  background: radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15), transparent 25%),
-              radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.15), transparent 25%),
-              linear-gradient(to bottom right, #09090b, #18181b);
+  background:
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(139, 92, 246, 0.15),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 85% 30%,
+      rgba(59, 130, 246, 0.15),
+      transparent 25%
+    ),
+    linear-gradient(to bottom right, #09090b, #18181b);
   background-attachment: fixed;
   color: #fafafa;
   font-family:
-    'Inter',
+    "Inter",
     -apple-system,
     BlinkMacSystemFont,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
     Helvetica,
     Arial,
@@ -32,8 +42,53 @@ body {
 
 :root[data-mode="light"] body {
   /* Sick Light theme gradient */
-  background: radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.08), transparent 25%),
-              radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.08), transparent 25%),
-              linear-gradient(to bottom right, #ffffff, #f4f4f5);
+  background:
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(139, 92, 246, 0.08),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 85% 30%,
+      rgba(59, 130, 246, 0.08),
+      transparent 25%
+    ),
+    linear-gradient(to bottom right, #ffffff, #f4f4f5);
   color: #09090b;
+}
+
+/* Custom animated background for empty state */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Custom Scrollbar for modern look */
+.stylish-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.stylish-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.stylish-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.2);
+  border-radius: 10px;
+}
+
+.stylish-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.4);
+}
+
+/* Make emojis crisp */
+.logo-emoji {
+  font-family:
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }
