@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { Button } from "@cloudflare/kumo";
+
 import {
   HouseIcon,
   ClockCounterClockwiseIcon,
@@ -9,7 +9,8 @@ import {
   FileTextIcon,
   ShareNetworkIcon,
   ListIcon,
-  XIcon
+  XIcon,
+  TrashIcon
 } from "@phosphor-icons/react";
 
 interface SidebarProps {
@@ -22,116 +23,153 @@ interface NavItemProps {
   label: string;
   isActive?: boolean;
   onClick?: () => void;
+  tooltip?: string;
 }
 
 function NavItem({ icon, label, isActive, onClick }: NavItemProps) {
   return (
-    <Button
-      variant="ghost"
-      onClick={onClick}
-      className={`w-12 h-12 sm:w-14 sm:h-14 mb-2 flex flex-col items-center justify-center rounded-xl transition-all duration-200 group ${
-        isActive
-          ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400"
-          : "text-kumo-subtle hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-100"
-      }`}
-      aria-label={label}
-    >
-      <div
-        className={`transition-transform duration-200 group-hover:scale-110 ${isActive ? "scale-110" : ""}`}
+    <div className="relative group/nav w-full flex justify-center mb-1">
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={label}
+        className={`w-11 h-11 flex items-center justify-center rounded-xl transition-all duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+          isActive
+            ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 shadow-sm"
+            : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100"
+        }`}
       >
-        {icon}
+        <div
+          className={`transition-transform duration-200 group-hover/nav:scale-110 ${isActive ? "scale-110" : ""}`}
+        >
+          {icon}
+        </div>
+      </button>
+      {/* Tooltip */}
+      <div className="pointer-events-none absolute left-[calc(100%+8px)] top-1/2 -translate-y-1/2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold px-2.5 py-1.5 rounded-lg opacity-0 group-hover/nav:opacity-100 whitespace-nowrap transition-opacity duration-150 shadow-md z-[60]">
+        {label}
+        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900 dark:border-r-slate-100" />
       </div>
-    </Button>
+    </div>
   );
 }
 
 export function Sidebar({ onClearHistory, onGeneratePlan }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [activePage, setActivePage] = useState("home");
+
+  const handleNav = (page: string, action?: () => void) => {
+    setActivePage(page);
+    action?.();
+    if (window.innerWidth < 768) setIsOpen(false);
+  };
 
   return (
     <>
-      {/* Mobile Menu Button - Top Left */}
+      {/* Mobile Menu Button */}
       <div className="md:hidden fixed top-4 left-4 z-50">
-        <Button
-          variant="ghost"
-          shape="square"
-          icon={isOpen ? <XIcon size={24} /> : <ListIcon size={24} />}
+        <button
+          type="button"
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? "Close menu" : "Open menu"}
-          className="bg-white/80 dark:bg-kumo-elevated/80 backdrop-blur-md shadow-sm rounded-xl border border-slate-200 dark:border-white/5"
-        />
+          className="w-10 h-10 bg-white/90 dark:bg-[#1a1d24]/90 backdrop-blur-md shadow-sm rounded-xl border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a1d24] transition-colors"
+        >
+          {isOpen ? <XIcon size={20} /> : <ListIcon size={20} />}
+        </button>
       </div>
 
-      {/* Overlay for mobile */}
+      {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity"
+          className="md:hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
           onClick={() => setIsOpen(false)}
+          aria-hidden="true"
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar */}
       <aside
-        className={`fixed md:sticky top-0 left-0 h-screen w-20 sm:w-24 bg-white/95 dark:bg-[#1a1d24]/95 backdrop-blur-xl border-r border-slate-100 dark:border-white/5 shadow-[2px_0_15px_-3px_rgba(0,0,0,0.03)] dark:shadow-[2px_0_15px_-3px_rgba(0,0,0,0.2)] z-40 flex flex-col items-center py-6 sm:py-8 transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
-          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        }`}
+        className={`
+          fixed md:sticky top-0 left-0 h-screen w-[72px] shrink-0
+          bg-white dark:bg-[#1a1d24]
+          border-r border-slate-100 dark:border-white/[0.06]
+          z-40 flex flex-col items-center py-5 gap-0
+          transition-transform duration-300 ease-out
+          ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+        `}
       >
-        {/* Profile Avatar (Top) */}
-        <div className="mb-10 sm:mb-12 cursor-pointer group relative">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-200 to-amber-400 flex items-center justify-center overflow-hidden border-2 border-white dark:border-[#1a1d24] shadow-sm transform transition-transform duration-300 group-hover:scale-105">
-            <span className="text-orange-900 font-bold text-sm select-none">
+        {/* User Avatar */}
+        <div className="mb-6 cursor-pointer group/avatar relative shrink-0">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-300 to-amber-500 flex items-center justify-center border-2 border-white dark:border-[#1a1d24] shadow-sm transition-transform duration-200 group-hover/avatar:scale-110">
+            <span className="text-orange-950 font-bold text-xs select-none">
               SV
             </span>
           </div>
-          <div className="absolute top-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-[#1a1d24]"></div>
+          <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-[#1a1d24]" />
         </div>
 
-        {/* Primary Navigation */}
-        <nav className="flex-1 flex flex-col items-center w-full relative z-10">
+        {/* Divider */}
+        <div className="w-8 h-px bg-slate-100 dark:bg-white/5 mb-4 shrink-0" />
+
+        {/* Navigation */}
+        <nav className="flex-1 flex flex-col items-center w-full overflow-hidden">
           <NavItem
-            icon={<HouseIcon size={24} weight="duotone" />}
+            icon={<HouseIcon size={22} weight="duotone" />}
             label="Home"
-            isActive={true}
-            onClick={() => {
-              if (window.innerWidth < 768) setIsOpen(false);
-            }}
+            isActive={activePage === "home"}
+            onClick={() => handleNav("home")}
           />
           <NavItem
-            icon={<ClockCounterClockwiseIcon size={24} weight="duotone" />}
-            label="History"
+            icon={<ClockCounterClockwiseIcon size={22} weight="duotone" />}
+            label="Clear History"
+            isActive={activePage === "history"}
+            onClick={() => handleNav("history", onClearHistory)}
+          />
+          <NavItem
+            icon={<LayoutIcon size={22} weight="duotone" />}
+            label="Dashboard"
+            isActive={activePage === "dashboard"}
+            onClick={() => handleNav("dashboard")}
+          />
+          <NavItem
+            icon={<FileTextIcon size={22} weight="duotone" />}
+            label="Generate Plan"
+            isActive={activePage === "plan"}
+            onClick={() => handleNav("plan", onGeneratePlan)}
+          />
+          <NavItem
+            icon={<VideoCameraIcon size={22} weight="duotone" />}
+            label="Meetings"
+            isActive={activePage === "meetings"}
+            onClick={() => handleNav("meetings")}
+          />
+          <NavItem
+            icon={<ShareNetworkIcon size={22} weight="duotone" />}
+            label="Integrations"
+            isActive={activePage === "integrations"}
+            onClick={() => handleNav("integrations")}
+          />
+        </nav>
+
+        {/* Divider */}
+        <div className="w-8 h-px bg-slate-100 dark:bg-white/5 mt-auto mb-3 shrink-0" />
+
+        {/* Bottom: Clear History (danger) */}
+        <div className="relative group/nav flex justify-center w-full shrink-0">
+          <button
+            type="button"
             onClick={() => {
               onClearHistory();
               if (window.innerWidth < 768) setIsOpen(false);
             }}
-          />
-          <NavItem
-            icon={<LayoutIcon size={24} weight="duotone" />}
-            label="Dashboard"
-          />
-          <NavItem
-            icon={<FileTextIcon size={24} weight="duotone" />}
-            label="Generate Plan"
-            onClick={() => {
-              onGeneratePlan();
-              if (window.innerWidth < 768) setIsOpen(false);
-            }}
-          />
-          <NavItem
-            icon={<VideoCameraIcon size={24} weight="duotone" />}
-            label="Meetings"
-          />
-          <NavItem
-            icon={<ShareNetworkIcon size={24} weight="duotone" />}
-            label="Integrations"
-          />
-        </nav>
-
-        {/* Bottom Logo or settings */}
-        <div className="mt-auto pt-6 flex flex-col items-center">
-          <div className="w-5 h-5 opacity-40 hover:opacity-100 transition-opacity cursor-pointer">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-            </svg>
+            aria-label="Delete all messages"
+            className="w-11 h-11 flex items-center justify-center rounded-xl text-slate-300 dark:text-slate-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 dark:hover:text-rose-400 transition-all duration-200 cursor-pointer"
+          >
+            <TrashIcon size={20} weight="duotone" />
+          </button>
+          <div className="pointer-events-none absolute left-[calc(100%+8px)] top-1/2 -translate-y-1/2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold px-2.5 py-1.5 rounded-lg opacity-0 group-hover/nav:opacity-100 whitespace-nowrap transition-opacity duration-150 shadow-md z-[60]">
+            Clear Chat
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900 dark:border-r-slate-100" />
           </div>
         </div>
       </aside>

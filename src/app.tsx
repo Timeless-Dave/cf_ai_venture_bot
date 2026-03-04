@@ -176,7 +176,7 @@ function Chat() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-screen relative w-full overflow-hidden bg-white dark:bg-[#15171c] sm:rounded-l-[2.5rem] shadow-[-10px_0_40px_-15px_rgba(0,0,0,0.05)] border-l border-slate-200/50 dark:border-white/5 transition-colors">
+      <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden bg-white dark:bg-[#15171c] sm:rounded-l-[2rem] shadow-[-8px_0_30px_-10px_rgba(0,0,0,0.04)] border-l border-slate-200/50 dark:border-white/[0.04] transition-colors duration-300">
         {/* Header */}
         <Header
           connected={connected}
@@ -245,9 +245,9 @@ function Chat() {
           </div>
         )}
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto stylish-scrollbar overflow-x-hidden scroll-smooth w-full relative z-10">
-          <div className="max-w-3xl mx-auto px-4 sm:px-8 py-10 space-y-10">
+        {/* Messages scroll area */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden stylish-scrollbar scroll-smooth">
+          <div className="max-w-3xl mx-auto px-4 sm:px-8 pt-10 pb-4 space-y-10">
             {messages.length === 0 && (
               <div className="flex flex-col justify-center min-h-[60vh] animate-in fade-in zoom-in-95 duration-700 max-w-2xl mx-auto mt-10">
                 <h1 className="text-4xl sm:text-[44px] font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-4">
@@ -299,12 +299,12 @@ function Chat() {
               );
             })}
 
-            <div ref={messagesEndRef} className="h-20" />
+            <div ref={messagesEndRef} className="h-2" />
           </div>
         </div>
 
-        {/* Input area overlapping the bottom slightly */}
-        <div className="absolute bottom-0 left-0 right-0 w-full z-20">
+        {/* Chat Input — sticky at the bottom inside the flex column */}
+        <div className="shrink-0">
           <ChatInput
             ref={textareaRef}
             input={input}
