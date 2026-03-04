@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { Badge, Button, Surface } from "@cloudflare/kumo";
+import { Button, Surface } from "@cloudflare/kumo";
 import {
   PlugsConnectedIcon,
   WrenchIcon,
   XIcon,
   PlusIcon,
-  SignInIcon,
-  TrashIcon
+  ShieldCheckIcon
 } from "@phosphor-icons/react";
 import type { MCPServersState } from "agents";
 
@@ -59,49 +58,42 @@ export function McpPanel({
   return (
     <div className="relative" ref={mcpPanelRef}>
       <Button
-        variant="secondary"
+        variant="ghost"
+        shape="square"
         icon={
-          <PlugsConnectedIcon
-            size={16}
+          <ShieldCheckIcon
+            size={18}
             weight={showMcpPanel ? "fill" : "regular"}
-            className={showMcpPanel ? "text-indigo-500" : ""}
+            className={
+              showMcpPanel
+                ? "text-indigo-600 dark:text-indigo-400"
+                : "text-slate-500 dark:text-slate-400"
+            }
           />
         }
         onClick={() => setShowMcpPanel(!showMcpPanel)}
-        className={`${showMcpPanel ? "bg-indigo-500/10 border-indigo-500/30" : "bg-kumo-elevated/70 border-kumo-line/50"} shadow-sm transition-all`}
+        aria-label="Toggle Integrations"
+        className={`w-9 h-9 transition-colors ${showMcpPanel ? "bg-indigo-50/50 dark:bg-indigo-500/10" : "hover:bg-slate-50 dark:hover:bg-white/5"}`}
       >
-        <span className="hidden sm:inline">MCP</span>
         {mcpToolCount > 0 && (
-          <Badge
-            variant="primary"
-            className="ml-1 sm:ml-1.5 bg-gradient-to-r from-purple-500 to-indigo-500 border-none shadow-sm px-1.5 py-0"
-          >
-            <WrenchIcon size={10} className="sm:mr-0.5" weight="fill" />
-            <span className="hidden sm:inline">{mcpToolCount}</span>
-          </Badge>
+          <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-500 border-2 border-white dark:border-[#1a1d24]" />
         )}
       </Button>
 
       {/* MCP Dropdown Panel */}
       {showMcpPanel && (
-        <div className="absolute right-0 top-full mt-3 w-[calc(100vw-2rem)] sm:w-96 z-50 animate-in slide-in-from-top-2 fade-in duration-200">
-          <Surface className="rounded-2xl ring-1 ring-kumo-line/40 shadow-2xl p-4 sm:p-5 space-y-4 bg-kumo-elevated/95 backdrop-blur-2xl border-t border-white/10">
+        <div className="absolute right-0 top-[120%] mt-2 w-[calc(100vw-2rem)] sm:w-[420px] z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+          <Surface className="rounded-[20px] ring-1 ring-slate-200 dark:ring-white/10 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.1)] p-5 sm:p-6 space-y-5 bg-white dark:bg-[#1a1d24]">
             {/* Panel Header */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
-                  <PlugsConnectedIcon size={18} weight="duotone" />
-                </div>
-                <span className="text-sm font-bold text-[15px] text-kumo-default">
-                  MCP Servers
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-white/5">
+              <div className="flex items-baseline gap-2.5">
+                <span className="text-[17px] font-semibold text-slate-900 dark:text-slate-100 tracking-tight">
+                  Integrations
                 </span>
                 {serverEntries.length > 0 && (
-                  <Badge
-                    variant="secondary"
-                    className="shadow-sm bg-kumo-control border-none"
-                  >
-                    {serverEntries.length}
-                  </Badge>
+                  <span className="text-sm font-medium text-slate-400 tracking-wide uppercase">
+                    CONNECTED ({serverEntries.length})
+                  </span>
                 )}
               </div>
               <Button
@@ -111,132 +103,116 @@ export function McpPanel({
                 aria-label="Close MCP panel"
                 icon={<XIcon size={16} />}
                 onClick={() => setShowMcpPanel(false)}
-                className="hover:bg-kumo-line/30 rounded-full"
+                className="hover:bg-slate-100 dark:hover:bg-white/5 rounded-full text-slate-500"
               />
             </div>
 
+            {/* Server List */}
+            {serverEntries.length > 0 && (
+              <div className="flex flex-wrap gap-3 max-h-48 overflow-y-auto stylish-scrollbar py-2">
+                {serverEntries.map(([id, server]) => (
+                  <div
+                    key={id}
+                    className="flex items-center justify-center relative group"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-white dark:bg-[#252830] border border-slate-200 dark:border-white/10 shadow-sm flex items-center justify-center transition-transform group-hover:-translate-y-1 group-hover:shadow-md cursor-pointer">
+                      <PlugsConnectedIcon
+                        size={24}
+                        className={
+                          server.state === "ready"
+                            ? "text-indigo-500"
+                            : "text-rose-500"
+                        }
+                        weight="duotone"
+                      />
+                    </div>
+
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs px-2.5 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none drop-shadow-md z-10 font-medium">
+                      {server.name}
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 dark:bg-white rotate-45"></div>
+                    </div>
+
+                    <button
+                      onClick={() => onRemoveServer(id)}
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-600 flex items-center justify-center text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all shadow-sm"
+                    >
+                      <XIcon size={10} weight="bold" />
+                    </button>
+                  </div>
+                ))}
+
+                {/* Add Server Button Icon */}
+                <div
+                  className="w-12 h-12 rounded-full bg-white dark:bg-[#252830] border border-slate-200 dark:border-white/10 border-dashed hover:border-solid hover:border-emerald-500 shadow-sm flex items-center justify-center transition-all cursor-pointer text-slate-400 hover:text-emerald-500 group"
+                  title="Add integration"
+                  onClick={() => {
+                    const form = document.getElementById("add-server-form");
+                    if (form) form.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  <PlusIcon
+                    size={20}
+                    weight="bold"
+                    className="group-hover:scale-110 transition-transform"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Add Server Form */}
             <form
+              id="add-server-form"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleAddServer();
               }}
-              className="space-y-3 bg-kumo-base/50 p-3 sm:p-4 rounded-xl border border-kumo-line/30 shadow-inner"
+              className="space-y-3 bg-slate-50/50 dark:bg-white/[0.02] p-4 rounded-[16px] border border-slate-100 dark:border-white/5 transition-all mt-4"
             >
+              <div className="flex items-center gap-2 mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                <PlugsConnectedIcon size={16} />
+                Add Custom Integration
+              </div>
               <input
                 type="text"
                 value={mcpName}
                 onChange={(e) => setMcpName(e.target.value)}
-                placeholder="Server name (e.g., Search API)"
-                className="w-full px-3.5 py-2 text-sm rounded-lg border border-kumo-line/60 bg-kumo-base text-kumo-default placeholder:text-kumo-subtle focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/50 transition-all shadow-sm"
+                placeholder="Integration Name"
+                className="w-full px-4 py-2.5 text-[15px] font-medium rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1d24] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm"
               />
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={mcpUrl}
                   onChange={(e) => setMcpUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="flex-1 px-3.5 py-2 text-sm rounded-lg border border-kumo-line/60 bg-kumo-base text-kumo-default placeholder:text-kumo-subtle focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/50 font-mono transition-all shadow-sm"
+                  placeholder="wss://api..."
+                  className="flex-1 px-4 py-2.5 text-[14px] rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1d24] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-mono transition-all shadow-sm"
                 />
                 <Button
                   type="submit"
                   variant="primary"
-                  icon={<PlusIcon size={16} weight="bold" />}
+                  icon={<PlusIcon size={18} weight="bold" />}
                   disabled={isAddingServer || !mcpName.trim() || !mcpUrl.trim()}
-                  className="shadow-sm bg-indigo-600 hover:bg-indigo-700 border-none"
+                  className="shadow-sm bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 border-none rounded-xl px-4 font-medium"
                 >
-                  {isAddingServer ? "..." : "Add"}
+                  {isAddingServer ? "Adding..." : "Connect"}
                 </Button>
               </div>
             </form>
 
-            {/* Server List */}
-            {serverEntries.length > 0 && (
-              <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1 stylish-scrollbar">
-                {serverEntries.map(([id, server]) => (
-                  <div
-                    key={id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border border-kumo-line/40 bg-kumo-base/60 hover:bg-kumo-base transition-colors shadow-sm group"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-semibold text-kumo-default truncate tracking-tight">
-                          {server.name}
-                        </span>
-                        <Badge
-                          variant={
-                            server.state === "ready"
-                              ? "primary"
-                              : server.state === "failed"
-                                ? "destructive"
-                                : "secondary"
-                          }
-                          className={
-                            server.state === "ready"
-                              ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                              : "text-[10px] uppercase"
-                          }
-                        >
-                          {server.state}
-                        </Badge>
-                      </div>
-                      <span className="text-[11px] font-mono text-kumo-subtle/80 truncate block">
-                        {server.server_url}
-                      </span>
-                      {server.state === "failed" && server.error && (
-                        <span className="text-[11px] text-red-500 block mt-1.5 bg-red-500/10 p-2 rounded-md border border-red-500/20">
-                          {server.error}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0 sm:opacity-70 sm:group-hover:opacity-100 transition-opacity justify-end">
-                      {server.state === "authenticating" && server.auth_url && (
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          icon={<SignInIcon size={14} />}
-                          onClick={() =>
-                            window.open(
-                              server.auth_url as string,
-                              "oauth",
-                              "width=600,height=800"
-                            )
-                          }
-                          className="bg-purple-600 hover:bg-purple-700 border-none"
-                        >
-                          Auth
-                        </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        shape="square"
-                        aria-label="Remove server"
-                        icon={<TrashIcon size={16} />}
-                        className="text-kumo-subtle hover:text-red-500 hover:bg-red-500/10 transition-colors rounded-lg"
-                        onClick={() => onRemoveServer(id)}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
             {/* Tool Summary */}
             {mcpToolCount > 0 && (
-              <div className="pt-4 border-t border-kumo-line/40 mt-2">
-                <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-gradient-to-r from-indigo-500/5 to-purple-500/5 border border-indigo-500/10">
-                  <div className="p-1.5 rounded-md bg-indigo-500/10 text-indigo-500">
-                    <WrenchIcon size={14} weight="fill" />
-                  </div>
-                  <span className="text-xs text-kumo-default font-medium">
-                    <span className="text-indigo-500 dark:text-indigo-400 font-bold">
-                      {mcpToolCount}
-                    </span>{" "}
-                    tool{mcpToolCount !== 1 ? "s" : ""} available from connected
-                    servers
-                  </span>
-                </div>
+              <div className="pt-3 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+                <span className="flex items-center gap-1.5">
+                  <WrenchIcon
+                    size={14}
+                    weight="fill"
+                    className="text-slate-400"
+                  />
+                  Synchronized Tools
+                </span>
+                <span className="font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-white/10 px-2.5 py-0.5 rounded-full">
+                  {mcpToolCount} active
+                </span>
               </div>
             )}
           </Surface>

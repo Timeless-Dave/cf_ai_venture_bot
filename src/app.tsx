@@ -3,14 +3,22 @@ import { useAgent } from "agents/react";
 import { useAgentChat } from "@cloudflare/ai-chat/react";
 import type { UIMessage } from "ai";
 import type { MCPServersState } from "agents";
-import { Button, Empty, Surface } from "@cloudflare/kumo";
+import { Button, Surface } from "@cloudflare/kumo";
 import { Toasty, useKumoToastManager } from "@cloudflare/kumo/components/toast";
 import { Streamdown } from "streamdown";
-import { ChatCircleDotsIcon, GearIcon, XIcon } from "@phosphor-icons/react";
+import {
+  XIcon,
+  CardsIcon,
+  LightbulbFilamentIcon,
+  UsersIcon,
+  PresentationChartIcon,
+  FileTextIcon
+} from "@phosphor-icons/react";
 
 import { Header } from "./components/Header";
 import { MessageItem } from "./components/MessageItem";
 import { ChatInput } from "./components/ChatInput";
+import { Sidebar } from "./components/Sidebar";
 
 function Chat() {
   const [connected, setConnected] = useState(false);
@@ -126,165 +134,188 @@ function Chat() {
     }
   }, [input, isStreaming, sendMessage]);
 
+  const suggestions = [
+    {
+      text: "Analyze my last meeting notes",
+      icon: <CardsIcon size={20} weight="duotone" className="text-indigo-500" />
+    },
+    {
+      text: "Draft a product launch strategy",
+      icon: (
+        <LightbulbFilamentIcon
+          size={20}
+          weight="duotone"
+          className="text-amber-500"
+        />
+      )
+    },
+    {
+      text: "Schedule a team sync",
+      icon: (
+        <UsersIcon size={20} weight="duotone" className="text-emerald-500" />
+      )
+    },
+    {
+      text: "Generate weekly analytics report",
+      icon: (
+        <PresentationChartIcon
+          size={20}
+          weight="duotone"
+          className="text-rose-500"
+        />
+      )
+    }
+  ];
+
   return (
-    <div className="flex flex-col h-screen bg-transparent relative">
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 pointer-events-none mix-blend-overlay z-0 hidden dark:block"></div>
-      {/* Header */}
-      <Header
-        connected={connected}
-        showDebug={showDebug}
-        setShowDebug={setShowDebug}
-        mcpState={mcpState}
-        onAddServer={handleAddServer}
-        onRemoveServer={handleRemoveServer}
+    <div className="flex h-screen bg-[#f4f6fb] dark:bg-[#0f1115] overflow-hidden text-[#1a1e23] dark:text-[#f0f2f5] font-sans selection:bg-indigo-500/30 font-medium">
+      {/* Sidebar Component */}
+      <Sidebar
         onClearHistory={clearHistory}
         onGeneratePlan={handleGeneratePlan}
-        planLoading={planLoading}
       />
 
-      {/* Plan modal */}
-      {showPlanModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-          onClick={() => setShowPlanModal(false)}
-          onKeyDown={(e) => e.key === "Escape" && setShowPlanModal(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Business plan"
-        >
-          <Surface
-            className="max-w-3xl w-full max-h-[85vh] overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col border border-white/10 dark:border-white/5 bg-kumo-elevated"
-            onClick={(e) => e.stopPropagation()}
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col h-screen relative w-full overflow-hidden bg-white dark:bg-[#15171c] sm:rounded-l-[2.5rem] shadow-[-10px_0_40px_-15px_rgba(0,0,0,0.05)] border-l border-slate-200/50 dark:border-white/5 transition-colors">
+        {/* Header */}
+        <Header
+          connected={connected}
+          showDebug={showDebug}
+          setShowDebug={setShowDebug}
+          mcpState={mcpState}
+          onAddServer={handleAddServer}
+          onRemoveServer={handleRemoveServer}
+        />
+
+        {/* Plan modal */}
+        {showPlanModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-200"
+            onClick={() => setShowPlanModal(false)}
+            onKeyDown={(e) => e.key === "Escape" && setShowPlanModal(false)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Business plan"
           >
-            <div className="flex items-center justify-between px-6 py-5 border-b border-kumo-line/50 bg-kumo-base/50">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-500 border border-indigo-500/20">
-                  <GearIcon size={22} weight="duotone" />
-                </div>
-                <span className="font-bold tracking-tight text-lg text-kumo-default">
-                  Your Business Plan
-                </span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                shape="square"
-                aria-label="Close"
-                icon={<XIcon size={18} />}
-                onClick={() => setShowPlanModal(false)}
-                className="hover:bg-kumo-line/50 rounded-full transition-colors"
-              />
-            </div>
-            <div className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gradient-to-b from-transparent to-kumo-base/30 stylish-scrollbar">
-              {planLoading ? (
-                <div className="flex flex-col items-center justify-center h-56 gap-5 text-kumo-subtle animate-in fade-in duration-500">
-                  <div className="relative">
-                    <div className="absolute inset-0 border-4 border-indigo-500/20 rounded-full w-14 h-14 -mx-1 -my-1"></div>
-                    <GearIcon
-                      size={48}
-                      className="animate-spin text-indigo-500 relative z-10"
-                      weight="duotone"
-                    />
+            <Surface
+              className="max-w-3xl w-full max-h-[85vh] overflow-hidden rounded-[24px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] flex flex-col border border-white/20 dark:border-white/10 bg-white dark:bg-[#1a1d24]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
+                    <FileTextIcon size={20} weight="fill" />
                   </div>
-                  <span className="font-semibold tracking-wide text-base">
-                    Synthesizing your plan…
+                  <span className="font-semibold tracking-tight text-lg text-slate-900 dark:text-white">
+                    Generated Plan
                   </span>
                 </div>
-              ) : planResult ? (
-                <Streamdown
-                  className="sd-theme prose prose-sm sm:prose-base max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-a:text-indigo-500 hover:prose-a:text-indigo-600 prose-img:rounded-xl prose-img:shadow-md"
-                  controls={false}
-                  isAnimating={false}
-                >
-                  {planResult}
-                </Streamdown>
-              ) : null}
-            </div>
-          </Surface>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  shape="square"
+                  aria-label="Close"
+                  icon={<XIcon size={18} weight="bold" />}
+                  onClick={() => setShowPlanModal(false)}
+                  className="hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-colors text-slate-500"
+                />
+              </div>
+              <div className="flex-1 overflow-y-auto p-6 sm:p-10 bg-white dark:bg-[#15171c] stylish-scrollbar tracking-normal">
+                {planLoading ? (
+                  <div className="flex flex-col items-center justify-center h-56 gap-5 text-slate-400 animate-in fade-in duration-500">
+                    <div className="relative">
+                      <div className="absolute inset-0 border-4 border-indigo-500/10 rounded-full w-14 h-14 -mx-1 -my-1"></div>
+                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-transparent border-t-indigo-500 relative z-10" />
+                    </div>
+                    <span className="font-medium tracking-wide text-sm uppercase text-slate-500">
+                      Synthesizing plan...
+                    </span>
+                  </div>
+                ) : planResult ? (
+                  <Streamdown
+                    className="sd-theme prose prose-sm sm:prose-base max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-900 dark:prose-headings:text-white prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-img:rounded-2xl prose-img:shadow-md"
+                    controls={false}
+                    isAnimating={false}
+                  >
+                    {planResult}
+                  </Streamdown>
+                ) : null}
+              </div>
+            </Surface>
+          </div>
+        )}
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto stylish-scrollbar overflow-x-hidden scroll-smooth w-full relative z-10">
+          <div className="max-w-3xl mx-auto px-4 sm:px-8 py-10 space-y-10">
+            {messages.length === 0 && (
+              <div className="flex flex-col justify-center min-h-[60vh] animate-in fade-in zoom-in-95 duration-700 max-w-2xl mx-auto mt-10">
+                <h1 className="text-4xl sm:text-[44px] font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1] mb-4">
+                  Welcome to VentureBot. <br />
+                  <span className="text-slate-400 dark:text-slate-500 font-medium">
+                    How can I help you today?
+                  </span>
+                </h1>
+
+                <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
+                  {suggestions.map((item, i) => (
+                    <Button
+                      key={item.text}
+                      variant="ghost"
+                      size="base"
+                      disabled={isStreaming}
+                      className="h-auto py-4 px-5 text-left justify-start items-center gap-3 whitespace-normal hover:-translate-y-1 transition-all duration-300 ring-1 ring-slate-200 dark:ring-white/10 hover:ring-indigo-500/30 hover:shadow-[0_8px_20px_-4px_rgba(0,0,0,0.05)] bg-white dark:bg-[#1a1d24] rounded-2xl group flex font-medium text-[14px] text-slate-700 dark:text-slate-300"
+                      style={{ animationDelay: `${i * 50}ms` }}
+                      onClick={() => {
+                        sendMessage({
+                          role: "user",
+                          parts: [{ type: "text", text: item.text }]
+                        });
+                      }}
+                    >
+                      <div className="flex-shrink-0 p-2 rounded-xl bg-slate-50 dark:bg-[#252830] group-hover:bg-white group-hover:shadow-sm transition-all border border-slate-100 dark:border-transparent group-hover:border-slate-200">
+                        {item.icon}
+                      </div>
+                      <span className="leading-snug">{item.text}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {messages.map((message: UIMessage, index: number) => {
+              const isLastAssistant =
+                message.role === "assistant" && index === messages.length - 1;
+
+              return (
+                <MessageItem
+                  key={message.id}
+                  message={message}
+                  isLastAssistant={isLastAssistant}
+                  isStreaming={isStreaming}
+                  showDebug={showDebug}
+                  addToolApprovalResponse={addToolApprovalResponse}
+                />
+              );
+            })}
+
+            <div ref={messagesEndRef} className="h-20" />
+          </div>
         </div>
-      )}
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto stylish-scrollbar pb-10 scroll-smooth relative z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
-          {messages.length === 0 && (
-            <div className="flex items-center justify-center min-h-[60vh] animate-in fade-in zoom-in-95 duration-700">
-              <Empty
-                icon={
-                  <div className="relative group">
-                    <div className="absolute -inset-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-full blur-2xl opacity-20 group-hover:opacity-50 transition-all duration-1000 animate-pulse"></div>
-                    <ChatCircleDotsIcon
-                      size={80}
-                      weight="duotone"
-                      className="text-indigo-500 relative z-10 drop-shadow-2xl group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                }
-                title="What's your next big idea?"
-                contents={
-                  <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 max-w-3xl w-full">
-                    {[
-                      "I have an app idea I want to validate",
-                      "My target audience is small business owners",
-                      "Here's how I'd make money: subscription and ads",
-                      "The problem I'm solving is scheduling for remote teams"
-                    ].map((prompt, i) => (
-                      <Button
-                        key={prompt}
-                        variant="outline"
-                        size="base"
-                        disabled={isStreaming}
-                        className={`h-auto py-5 px-6 text-left justify-start whitespace-normal hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 ring-1 ring-kumo-line/40 hover:ring-indigo-500/50 bg-kumo-base/60 backdrop-blur-md rounded-2xl group relative overflow-hidden`}
-                        style={{ animationDelay: `${i * 100}ms` }}
-                        onClick={() => {
-                          sendMessage({
-                            role: "user",
-                            parts: [{ type: "text", text: prompt }]
-                          });
-                        }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/5 to-indigo-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                        <span className="relative z-10 font-semibold text-[15px] text-kumo-default group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors leading-relaxed">
-                          {prompt}
-                        </span>
-                      </Button>
-                    ))}
-                  </div>
-                }
-              />
-            </div>
-          )}
-
-          {messages.map((message: UIMessage, index: number) => {
-            const isLastAssistant =
-              message.role === "assistant" && index === messages.length - 1;
-
-            return (
-              <MessageItem
-                key={message.id}
-                message={message}
-                isLastAssistant={isLastAssistant}
-                isStreaming={isStreaming}
-                showDebug={showDebug}
-                addToolApprovalResponse={addToolApprovalResponse}
-              />
-            );
-          })}
-
-          <div ref={messagesEndRef} className="h-6" />
+        {/* Input area overlapping the bottom slightly */}
+        <div className="absolute bottom-0 left-0 right-0 w-full z-20">
+          <ChatInput
+            ref={textareaRef}
+            input={input}
+            setInput={setInput}
+            isStreaming={isStreaming}
+            connected={connected}
+            onSend={send}
+            onStop={stop}
+          />
         </div>
       </div>
-
-      {/* Input */}
-      <ChatInput
-        ref={textareaRef}
-        input={input}
-        setInput={setInput}
-        isStreaming={isStreaming}
-        connected={connected}
-        onSend={send}
-        onStop={stop}
-      />
     </div>
   );
 }
@@ -294,17 +325,10 @@ export default function App() {
     <Toasty>
       <Suspense
         fallback={
-          <div className="flex flex-col items-center justify-center h-screen gap-6 bg-kumo-base">
-            <div className="relative">
-              <div className="absolute inset-0 border-4 border-indigo-500/20 rounded-full animate-[spin_3s_linear_infinite] w-16 h-16 -mx-2 -my-2"></div>
-              <ChatCircleDotsIcon
-                size={48}
-                className="text-indigo-500 animate-pulse relative z-10 drop-shadow-xl"
-                weight="duotone"
-              />
-            </div>
-            <span className="text-kumo-subtle font-bold tracking-[0.2em] uppercase text-sm animate-pulse">
-              Initializing VentureBot...
+          <div className="flex flex-col items-center justify-center h-screen gap-4 bg-[#f4f6fb] dark:bg-[#0f1115]">
+            <div className="animate-spin rounded-full h-8 w-8 border-[3px] border-slate-200 border-t-indigo-600 dark:border-slate-800 dark:border-t-indigo-500" />
+            <span className="text-slate-500 dark:text-slate-400 font-medium tracking-wide text-sm">
+              Loading Workspace...
             </span>
           </div>
         }
