@@ -3,6 +3,9 @@
 @source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
 @source "../node_modules/streamdown/dist/index.js";
 
+/* Tell Tailwind v4 to use [data-mode="dark"] as the dark mode selector */
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+
 html,
 body,
 #root {
@@ -10,15 +13,11 @@ body,
   height: 100%;
   margin: 0;
   overflow: hidden;
-  /* Prevent scrolling on the body level */
 }
 
 body {
-  /* Sleek, professional Stratify-inspired Light theme */
   background: #f4f6fb;
-  /* Soft, airy background color */
   color: #1a1e23;
-  /* Professional text color */
   font-family:
     "Inter",
     -apple-system,
@@ -30,13 +29,13 @@ body {
     sans-serif;
 }
 
-:root[data-mode="dark"] body {
-  /* Deep, clean Stratify-inspired Dark theme */
+/* Global dark mode body background (fallback for non-Tailwind elements) */
+[data-mode="dark"] body {
   background: #0f1115;
   color: #f0f2f5;
 }
 
-/* Custom Scrollbar for modern look */
+/* Custom slim scrollbar */
 .stylish-scrollbar::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -55,16 +54,10 @@ body {
   background: rgba(100, 116, 139, 0.4);
 }
 
-:root[data-mode="dark"] .stylish-scrollbar::-webkit-scrollbar-thumb {
+[data-mode="dark"] .stylish-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(148, 163, 184, 0.15);
 }
 
-:root[data-mode="dark"] .stylish-scrollbar::-webkit-scrollbar-thumb:hover {
+[data-mode="dark"] .stylish-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.3);
-}
-
-/* Make emojis crisp */
-.logo-emoji {
-  font-family:
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }

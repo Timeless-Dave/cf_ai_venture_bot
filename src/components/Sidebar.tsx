@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
-
 import {
   HouseIcon,
   ClockCounterClockwiseIcon,
@@ -23,153 +22,164 @@ interface NavItemProps {
   label: string;
   isActive?: boolean;
   onClick?: () => void;
-  tooltip?: string;
 }
 
 function NavItem({ icon, label, isActive, onClick }: NavItemProps) {
   return (
-    <div className="relative group/nav w-full flex justify-center mb-1">
+    <div className="relative group/navitem w-full flex justify-center mb-1">
       <button
         type="button"
         onClick={onClick}
         aria-label={label}
-        className={`w-11 h-11 flex items-center justify-center rounded-xl transition-all duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
+        className={[
+          "w-11 h-11 flex items-center justify-center rounded-xl transition-all duration-200 cursor-pointer",
+          "outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
           isActive
-            ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 shadow-sm"
-            : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100"
-        }`}
+            ? "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
+            : "text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200"
+        ].join(" ")}
       >
-        <div
-          className={`transition-transform duration-200 group-hover/nav:scale-110 ${isActive ? "scale-110" : ""}`}
+        <span
+          className={`block transition-transform duration-200 group-hover/navitem:scale-110 ${isActive ? "scale-110" : ""}`}
         >
           {icon}
-        </div>
+        </span>
       </button>
-      {/* Tooltip */}
-      <div className="pointer-events-none absolute left-[calc(100%+8px)] top-1/2 -translate-y-1/2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold px-2.5 py-1.5 rounded-lg opacity-0 group-hover/nav:opacity-100 whitespace-nowrap transition-opacity duration-150 shadow-md z-[60]">
+      {/* Tooltip — appears to the right */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-slate-800 dark:bg-white text-white dark:text-slate-900 text-xs font-semibold rounded-lg opacity-0 group-hover/navitem:opacity-100 transition-opacity duration-150 whitespace-nowrap shadow-lg z-[9999]"
+      >
         {label}
-        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900 dark:border-r-slate-100" />
+        <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-800 dark:border-r-white" />
       </div>
     </div>
   );
 }
 
 export function Sidebar({ onClearHistory, onGeneratePlan }: SidebarProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [activePage, setActivePage] = useState("home");
 
-  const handleNav = (page: string, action?: () => void) => {
+  const nav = (page: string, action?: () => void) => {
     setActivePage(page);
     action?.();
-    if (window.innerWidth < 768) setIsOpen(false);
+    setMobileOpen(false);
   };
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
+      {/* ── Mobile hamburger (always on top) ─────────────────────── */}
+      <div className="md:hidden fixed top-3 left-3 z-[60]">
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label={isOpen ? "Close menu" : "Open menu"}
-          className="w-10 h-10 bg-white/90 dark:bg-[#1a1d24]/90 backdrop-blur-md shadow-sm rounded-xl border border-slate-200 dark:border-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1a1d24] transition-colors"
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          onClick={() => setMobileOpen((v) => !v)}
+          className="w-10 h-10 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 shadow rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#252830] transition-colors"
         >
-          {isOpen ? <XIcon size={20} /> : <ListIcon size={20} />}
+          {mobileOpen ? <XIcon size={20} /> : <ListIcon size={20} />}
         </button>
       </div>
 
-      {/* Mobile Overlay */}
-      {isOpen && (
+      {/* ── Overlay (mobile only) ─────────────────────────────────── */}
+      {mobileOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
-          onClick={() => setIsOpen(false)}
           aria-hidden="true"
+          className="fixed inset-0 bg-black/40 z-[50] md:hidden"
+          onClick={() => setMobileOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
+      {/* ── Sidebar panel ─────────────────────────────────────────── */}
       <aside
-        className={`
-          fixed md:sticky top-0 left-0 h-screen w-[72px] shrink-0
-          bg-white dark:bg-[#1a1d24]
-          border-r border-slate-100 dark:border-white/[0.06]
-          z-40 flex flex-col items-center py-5 gap-0
-          transition-transform duration-300 ease-out
-          ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-        `}
+        className={[
+          // Size & positioning
+          "fixed md:sticky top-0 left-0 w-[72px] h-screen shrink-0",
+          // Visuals
+          "bg-white dark:bg-[#1a1d24]",
+          "border-r border-slate-100 dark:border-white/[0.06]",
+          // Layout
+          "flex flex-col items-center py-5",
+          // Stacking
+          "z-[55]",
+          // Slide animation (mobile only; md always visible)
+          "transition-transform duration-300 ease-out",
+          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        ].join(" ")}
       >
-        {/* User Avatar */}
-        <div className="mb-6 cursor-pointer group/avatar relative shrink-0">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-300 to-amber-500 flex items-center justify-center border-2 border-white dark:border-[#1a1d24] shadow-sm transition-transform duration-200 group-hover/avatar:scale-110">
-            <span className="text-orange-950 font-bold text-xs select-none">
+        {/* Avatar */}
+        <div className="mb-5 relative shrink-0 cursor-pointer group/av">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-300 to-amber-500 flex items-center justify-center border-2 border-white dark:border-[#1a1d24] shadow transition-transform duration-200 group-hover/av:scale-110">
+            <span className="text-orange-950 font-bold text-[11px] select-none">
               SV
             </span>
           </div>
-          <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-[#1a1d24]" />
+          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-[#1a1d24]" />
         </div>
 
-        {/* Divider */}
-        <div className="w-8 h-px bg-slate-100 dark:bg-white/5 mb-4 shrink-0" />
+        <div className="w-7 h-px bg-slate-100 dark:bg-white/5 mb-3 shrink-0" />
 
-        {/* Navigation */}
-        <nav className="flex-1 flex flex-col items-center w-full overflow-hidden">
+        {/* Nav */}
+        <nav className="flex-1 flex flex-col items-center w-full overflow-visible">
           <NavItem
-            icon={<HouseIcon size={22} weight="duotone" />}
+            icon={<HouseIcon size={21} weight="duotone" />}
             label="Home"
             isActive={activePage === "home"}
-            onClick={() => handleNav("home")}
+            onClick={() => nav("home")}
           />
           <NavItem
-            icon={<ClockCounterClockwiseIcon size={22} weight="duotone" />}
+            icon={<ClockCounterClockwiseIcon size={21} weight="duotone" />}
             label="Clear History"
             isActive={activePage === "history"}
-            onClick={() => handleNav("history", onClearHistory)}
+            onClick={() => nav("history", onClearHistory)}
           />
           <NavItem
-            icon={<LayoutIcon size={22} weight="duotone" />}
+            icon={<LayoutIcon size={21} weight="duotone" />}
             label="Dashboard"
             isActive={activePage === "dashboard"}
-            onClick={() => handleNav("dashboard")}
+            onClick={() => nav("dashboard")}
           />
           <NavItem
-            icon={<FileTextIcon size={22} weight="duotone" />}
+            icon={<FileTextIcon size={21} weight="duotone" />}
             label="Generate Plan"
             isActive={activePage === "plan"}
-            onClick={() => handleNav("plan", onGeneratePlan)}
+            onClick={() => nav("plan", onGeneratePlan)}
           />
           <NavItem
-            icon={<VideoCameraIcon size={22} weight="duotone" />}
+            icon={<VideoCameraIcon size={21} weight="duotone" />}
             label="Meetings"
             isActive={activePage === "meetings"}
-            onClick={() => handleNav("meetings")}
+            onClick={() => nav("meetings")}
           />
           <NavItem
-            icon={<ShareNetworkIcon size={22} weight="duotone" />}
+            icon={<ShareNetworkIcon size={21} weight="duotone" />}
             label="Integrations"
             isActive={activePage === "integrations"}
-            onClick={() => handleNav("integrations")}
+            onClick={() => nav("integrations")}
           />
         </nav>
 
-        {/* Divider */}
-        <div className="w-8 h-px bg-slate-100 dark:bg-white/5 mt-auto mb-3 shrink-0" />
+        <div className="w-7 h-px bg-slate-100 dark:bg-white/5 mt-auto mb-3 shrink-0" />
 
-        {/* Bottom: Clear History (danger) */}
-        <div className="relative group/nav flex justify-center w-full shrink-0">
+        {/* Clear chat (bottom danger action) */}
+        <div className="relative group/navitem w-full flex justify-center shrink-0">
           <button
             type="button"
+            aria-label="Clear all chats"
             onClick={() => {
               onClearHistory();
-              if (window.innerWidth < 768) setIsOpen(false);
+              setMobileOpen(false);
             }}
-            aria-label="Delete all messages"
             className="w-11 h-11 flex items-center justify-center rounded-xl text-slate-300 dark:text-slate-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-500 dark:hover:text-rose-400 transition-all duration-200 cursor-pointer"
           >
             <TrashIcon size={20} weight="duotone" />
           </button>
-          <div className="pointer-events-none absolute left-[calc(100%+8px)] top-1/2 -translate-y-1/2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold px-2.5 py-1.5 rounded-lg opacity-0 group-hover/nav:opacity-100 whitespace-nowrap transition-opacity duration-150 shadow-md z-[60]">
-            Clear Chat
-            <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900 dark:border-r-slate-100" />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-slate-800 dark:bg-white text-white dark:text-slate-900 text-xs font-semibold rounded-lg opacity-0 group-hover/navitem:opacity-100 transition-opacity duration-150 whitespace-nowrap shadow-lg z-[9999]"
+          >
+            Clear Chats
+            <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-800 dark:border-r-white" />
           </div>
         </div>
       </aside>
